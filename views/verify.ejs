@@ -1,0 +1,102 @@
+<div class="col s12 m7" id="maindiv">
+  <h2 class="header">Verify Your Otp</h2>
+  <div class="card horizontal">
+    <div class="card-stacked">
+      <div class="card-content">
+        <div class="container">
+          <div class="row">
+            <div class="input-field col s12">
+              <input id="otp" type="text" class="validate" name="otp" />
+              <label for="email">OTP</label>
+            </div>
+          </div>
+          <button id="verify" class="btn btn-primary">
+            <p style="font-size: 20px;">
+              Verify Otp<i class="material-icons" style="font-size: 23px;"
+                >fingerprint</i
+              >
+            </p>
+          </button>
+          <button id="resend" class="btn btn-primary">
+            <p style="font-size: 20px;">
+              Resend Otp<i class="material-icons" style="font-size: 23px;"
+                >refresh</i
+              >
+            </p>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  console.log("<%=id%>");
+  console.log("<%=email%>");
+  console.log("<%=otp%>");
+  var dbotp = "<%=otp%>";
+  let verifybtn = document.getElementById("verify");
+  verifybtn.addEventListener("click", () => {
+    let otp = document.getElementById("otp").value;
+    console.log(otp, dbotp);
+    if (otp != dbotp) {
+      notie.alert({
+        position: "bottom",
+        time: 3,
+        type: "info",
+        text: "please enter the same otp!",
+      });
+      document.getElementById("otp").value = "";
+    } else {
+      $.post(
+        "/updateisverified",
+        {
+          id: "<%=id%>",
+        },
+        (data) => {
+          console.log(data);
+          if (data.status == "success") {
+            notie.alert({
+              position: "bottom",
+              time: 3,
+              type: "info",
+              text: "Otp Verified Successfully",
+            });
+            document.getElementById(
+              "maindiv"
+            ).innerHTML = `<h1>otp verified successfully<i class="material-icons" style="font-size:57px;">check</i></h1>`;
+          }
+        }
+      );
+      document.getElementById("otp").value = "";
+    }
+  });
+  let resendbtn = document.getElementById("resend");
+  resendbtn.addEventListener("click", () => {
+    $.post(
+      "/resendotp",
+      {
+        id: "<%=id%>",
+        email: "<%=email%>",
+      },
+      (data) => {
+        dbotp = data.otp;
+        if (data.status == true) {
+          notie.alert({
+            position: "bottom",
+            time: 3,
+            type: "info",
+            text: "Otp Resend Successfully",
+          });
+        } else {
+          notie.alert({
+            position: "bottom",
+            time: 3,
+            type: "info",
+            text: data.message,
+          });
+        }
+        console.log(data);
+      }
+    );
+  });
+</script>
